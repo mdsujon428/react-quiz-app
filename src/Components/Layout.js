@@ -2,7 +2,6 @@ import classes from "../styles/Layout.module.css";
 import Nav from './Nav';
 
 const Layout = ({children}) => {
-    console.log(children)
     return (
         <>
            <Nav/>
