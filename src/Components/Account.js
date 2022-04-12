@@ -6,7 +6,6 @@ import classes from "../styles/Account.module.css";
 
 const Account = () => {
   const { logOut, currentUser } = useFirebase();
-  console.log(currentUser?.displayName)
   return (
     <div className={classes.account}>
       <div className={classes.userInfo}>

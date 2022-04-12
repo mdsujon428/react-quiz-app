@@ -1,11 +1,21 @@
-import { get, getDatabase, orderByKey, query, ref } from 'firebase/database';
+import {
+    get,
+    getDatabase,
+    limitToFirst,
+    orderByKey,
+    query,
+    ref,
+    startAt
+} from 'firebase/database';
 import { useEffect, useState } from "react";
 
 
-const useVideoList = () => {
-    const [loading,setLoading] = useState(false);
-    const [error,setError] = useState(false);
-    const [videos,setVideos] = useState([])
+const useVideoList = (page) => {
+    const [loading,setLoading] = useState(true);
+    const [error,setError] = useState(true);
+    const [videos,setVideos] = useState([]);
+    const [hasMore,setHasMore] = useState(true)
+   
     useEffect(()=>{
         const fetchVideos =async()=>{
             // database related work
@@ -13,12 +23,14 @@ const useVideoList = () => {
             const videosRef = ref(data,"videos");
             const videoQuery = query(
                 videosRef,
-                orderByKey()
+                orderByKey(),
+                startAt("" + page),
+                limitToFirst(8)
             ) 
 
             try {
-                setError(false);
                 setLoading(true);
+                setError(false);
                 //request firebase database.
                 const snapshot = await get(videoQuery);
                 setLoading(false)
@@ -26,24 +38,24 @@ const useVideoList = () => {
                     setVideos((prevVideos)=>{
                         return [...prevVideos,...Object.values(snapshot.val())]
                     })
+                    
                 } else{
-                    //
-
+                    setHasMore(false)
                 }
             } catch (error) {
-                console.log(error.message);
+                alert(error.message);
                 setError(true);
                 setLoading(false);
             }
         }
 
         fetchVideos();
-    },[])
-
+    },[page])
     return {
         loading,
         error,
-        videos
+        videos,
+        hasMore
     };
 };
 
